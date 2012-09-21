@@ -2,20 +2,23 @@
   (:use [clojure.string :only [split]]))
 
 (defn lines [input]
-  (rest ; account for the leading \n
+  ; break a block of OCR'd text into lines, removing the leading linebreak
+  (rest
     (split input #"\n")))
 
 (defn cols [line]
-  (let [
-    list-of-chars-lists (partition 3 line)]
+  ; breaks a string representing a line into a list of 3-string groups
+  (let [list-of-chars-lists (partition 3 line)]
     (map
       (partial apply str)
         list-of-chars-lists)))
 
 (defn parse-it [input]
+  ; breaks a block of digits into a list of list of 3-string groups
   (map cols (lines input)))
 
 (defn get-col [lines,n]
+  ; get a column from the parsed input
   (apply str
     (map
       (fn [line] (nth line n))
@@ -35,9 +38,11 @@
   })
 
 (defn value-of [digit]
+  ; returns the numeric value given a 3x3 matrix of strings
   (value-map digit))
 
 (defn read-digits [digits]
+  ; reads a block of digits and returns a vector of the digits that were parsed
   (map value-of
     (map
       (partial get-col (parse-it digits))
